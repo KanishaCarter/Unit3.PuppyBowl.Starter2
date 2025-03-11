@@ -3,8 +3,11 @@
  * Shows a list of puppies in the roster.
  * Users can select a puppy to see more information about it.
  */
+import { useGetPuppiesQuery } from "../../api/puppyBowlApi";
+
 export default function PuppyList({ setSelectedPuppyId }) {
-  // TODO: Get data from getPuppies query
+  // Get data from getPuppies query
+  const { data: puppies = [], isLoading } = useGetPuppiesQuery();
 
   return (
     <article>

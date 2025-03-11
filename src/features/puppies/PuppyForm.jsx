@@ -1,4 +1,17 @@
 import { useState } from "react";
+import { useMutation, gql } from "@apollo/client"; // Importing necessary hooks and gql
+
+// Define the GraphQL mutation to add a puppy
+const MUTATION_ADD_PUPPY = gql`
+  mutation AddPuppy($name: String!, $breed: String!, $imageUrl: String!) {
+    addPuppy(name: $name, breed: $breed, imageUrl: $imageUrl) {
+      id
+      name
+      breed
+      imageUrl
+    }
+  }
+`;
 
 /**
  * @component
@@ -8,13 +21,24 @@ export default function PuppyForm() {
   const [name, setName] = useState("");
   const [breed, setBreed] = useState("");
 
-  // TODO: Use the `addPuppy` mutation to add a puppy when the form is submitted
+  // Apollo Client's useMutation hook for the GraphQL mutation
+  const [addPuppy, { loading, error }] = useMutation(MUTATION_ADD_PUPPY);
 
+  // Handle form submission to add a puppy
   function postPuppy(event) {
     event.preventDefault();
 
-    // Placeholder image w/ random photos of dogs
+    // Placeholder image URL for puppy
     const imageUrl = "https://loremflickr.com/200/300/dog";
+
+    // Execute the mutation
+    addPuppy({
+      variables: {
+        name,
+        breed,
+        imageUrl, // Passing the puppy's image URL
+      },
+    }).catch((err) => console.error("Error adding puppy:", err));
   }
 
   return (
@@ -37,8 +61,8 @@ export default function PuppyForm() {
             onChange={(e) => setBreed(e.target.value)}
           />
         </label>
-        <button>Add to Roster</button>
-        {isLoading && <output>Uploading puppy information...</output>}
+        <button type="submit">Add to Roster</button>
+        {loading && <output>Uploading puppy information...</output>}
         {error && <output>{error.message}</output>}
       </form>
     </>
